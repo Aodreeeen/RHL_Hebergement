@@ -1,0 +1,44 @@
+const API_URL = 'https://n8n.srv1206491.hstgr.cloud/webhook/estimation';
+
+export async function getEstimation({ commune, categorie, type_bien, surface }) {
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      commune,
+      categorie,
+      type_bien,
+      surface: Number(surface),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Erreur lors de la récupération de l\'estimation');
+  }
+
+  return response.json();
+}
+
+// Liste des communes disponibles
+export const COMMUNES = [
+  'Papeete',
+  'Punaauia',
+  'Faaa',
+  'Pirae',
+  'Arue',
+  'Mahina',
+  'Paea',
+  'Papara',
+  'Taiarapu-Est',
+  'Taiarapu-Ouest',
+  'Teva I Uta',
+  'Hitiaa O Te Ra',
+];
+
+// Catégories de biens
+export const CATEGORIES = ['Maison', 'Appartement', 'Terrain'];
+
+// Types de biens
+export const TYPES_BIEN = ['Studio', 'F1', 'F2', 'F3', 'F4', 'F5', '>F5'];
