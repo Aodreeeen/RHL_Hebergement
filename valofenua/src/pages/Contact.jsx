@@ -113,10 +113,10 @@ export default function Contact() {
                     <p className="text-slate-600 text-sm">
                       Vous pouvez également nous écrire directement à{' '}
                       <a
-                        href="mailto:aodren.gloux@gmail.com"
+                        href="mailto:contact@valofenua.com"
                         className="text-[#0077B6] hover:underline"
                       >
-                        aodren.gloux@gmail.com
+                        contact@valofenua.com
                       </a>
                     </p>
                   </div>

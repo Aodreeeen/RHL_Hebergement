@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import Estimation from './pages/Estimation';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import MentionsLegales from './pages/MentionsLegales';
+import CGV from './pages/CGV';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/estimation" element={<Estimation />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/mentions-legales" element={<MentionsLegales />} />
+        <Route path="/cgv" element={<CGV />} />
       </Routes>
       <Footer />
     </Router>
