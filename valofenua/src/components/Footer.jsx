@@ -43,13 +43,20 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Informations */}
+          {/* Informations légales */}
           <div className="md:col-span-1">
             <h3 className="font-semibold text-lg mb-4">Informations</h3>
-            <ul className="space-y-2 text-sm text-slate-400">
-              <li>Données basées sur le marché local</li>
-              <li>12 communes de Tahiti couvertes</li>
-              <li>Mise à jour régulière des données</li>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/mentions-legales" className="text-slate-400 hover:text-white transition-colors">
+                  Mentions légales
+                </Link>
+              </li>
+              <li>
+                <Link to="/cgv" className="text-slate-400 hover:text-white transition-colors">
+                  Conditions d'utilisation
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
