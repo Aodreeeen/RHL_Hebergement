@@ -18,7 +18,11 @@ export async function getEstimation({ commune, categorie, type_bien, surface }) 
     throw new Error('Erreur lors de la récupération de l\'estimation');
   }
 
-  return response.json();
+  const data = await response.json();
+
+  // Le webhook renvoie un tableau [{}] au lieu d'un objet direct
+  // On extrait le premier élément si c'est un tableau
+  return Array.isArray(data) ? data[0] : data;
 }
 
 // Liste des communes disponibles
