@@ -1,5 +1,6 @@
 import { Banknote, RotateCcw, MapPin, Ruler, TrendingUp, Home, Calculator, BarChart3 } from 'lucide-react';
 import PriceRangeBar from './PriceRangeBar';
+import SimilarOffers from './SimilarOffers';
 import { formatPriceXPF, formatPriceMF } from '../utils/formatPrice';
 
 export default function EstimationResult({ result, formData, onReset }) {
@@ -134,6 +135,9 @@ export default function EstimationResult({ result, formData, onReset }) {
           </div>
         </div>
       </div>
+
+      {/* Offres similaires */}
+      <SimilarOffers comparables={result.comparables} />
 
       {/* Note informative */}
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
