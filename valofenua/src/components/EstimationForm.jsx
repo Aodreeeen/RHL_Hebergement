@@ -62,11 +62,15 @@ export default function EstimationForm() {
   };
 
   if (result) {
-    return <EstimationResult result={result} formData={formData} onReset={handleReset} />;
+    return (
+      <div className="w-full max-w-7xl mx-auto">
+        <EstimationResult result={result} formData={formData} onReset={handleReset} />
+      </div>
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 md:p-8 max-w-xl mx-auto">
       <div className="space-y-6">
         {/* Commune */}
         <div>

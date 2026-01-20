@@ -3,8 +3,8 @@ import EstimationForm from '../components/EstimationForm';
 export default function Estimation() {
   return (
     <main className="flex-1 py-12 md:py-20 bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-10">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10 max-w-3xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">
             Estimez votre bien
           </h1>
