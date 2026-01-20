@@ -23,8 +23,10 @@ export default function SimilarOffers({ comparables }) {
   // Tronquer la description à un certain nombre de caractères
   const truncateDescription = (text, maxLength = 120) => {
     if (!text) return 'Aucune description disponible';
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + '...';
+    // Remplacer les \n par des espaces pour un affichage propre
+    const cleanedText = text.replace(/\\n/g, ' ').replace(/\s+/g, ' ').trim();
+    if (cleanedText.length <= maxLength) return cleanedText;
+    return cleanedText.substring(0, maxLength).trim() + '...';
   };
 
   // Composant pour une seule carte d'offre avec gestion d'état pour l'image
