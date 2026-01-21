@@ -20,13 +20,11 @@ export default function SimilarOffers({ comparables }) {
     return photoUrl;
   };
 
-  // Tronquer la description à un certain nombre de caractères
-  const truncateDescription = (text, maxLength = 120) => {
+  // Nettoyer la description (enlever les \n et espaces multiples)
+  const cleanDescription = (text) => {
     if (!text) return 'Aucune description disponible';
     // Remplacer les \n par des espaces pour un affichage propre
-    const cleanedText = text.replace(/\\n/g, ' ').replace(/\s+/g, ' ').trim();
-    if (cleanedText.length <= maxLength) return cleanedText;
-    return cleanedText.substring(0, maxLength).trim() + '...';
+    return text.replace(/\\n/g, ' ').replace(/\s+/g, ' ').trim();
   };
 
   // Composant pour une seule carte d'offre avec gestion d'état pour l'image
@@ -95,7 +93,7 @@ export default function SimilarOffers({ comparables }) {
           {/* Description */}
           <div className="border-t border-slate-100 pt-4">
             <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
-              {truncateDescription(offer.description, 150)}
+              {cleanDescription(offer.description)}
             </p>
           </div>
         </div>
