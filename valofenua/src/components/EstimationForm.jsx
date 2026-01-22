@@ -180,6 +180,13 @@ export default function EstimationForm({ initialState }) {
             </>
           )}
         </button>
+
+        {/* Message de patience pendant le chargement */}
+        {loading && (
+          <p className="text-center text-sm text-slate-500 mt-3">
+            Veuillez patienter, l'analyse prend environ 10 secondes...
+          </p>
+        )}
       </div>
     </form>
   );
