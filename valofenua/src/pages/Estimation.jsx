@@ -1,6 +1,10 @@
+import { useLocation } from 'react-router-dom';
 import EstimationForm from '../components/EstimationForm';
 
 export default function Estimation() {
+  const location = useLocation();
+  const initialState = location.state || null;
+
   return (
     <main className="flex-1 py-12 md:py-20 bg-gradient-to-b from-slate-50 to-white">
       <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -12,7 +16,7 @@ export default function Estimation() {
             Remplissez le formulaire ci-dessous pour obtenir une estimation gratuite
           </p>
         </div>
-        <EstimationForm />
+        <EstimationForm initialState={initialState} />
       </div>
     </main>
   );
