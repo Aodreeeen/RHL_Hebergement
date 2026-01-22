@@ -297,7 +297,6 @@ export default function RapportPDF({ result, formData }) {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>ValoFenua - Estimation immobilière en Polynésie française</Text>
-          <Text style={styles.footerText}>Données basées sur les annonces de immobilier.pf</Text>
         </View>
       </Page>
     </Document>
