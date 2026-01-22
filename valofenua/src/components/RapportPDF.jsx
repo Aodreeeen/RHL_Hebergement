@@ -1,90 +1,90 @@
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { formatPriceXPF, formatPriceMF } from '../utils/formatPrice';
 
-// Styles pour le PDF
+// Styles pour le PDF - Version compacte pour tenir sur une page
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 30,
     fontFamily: 'Helvetica',
     backgroundColor: '#FFFFFF',
   },
   header: {
-    marginBottom: 30,
+    marginBottom: 15,
     borderBottom: '2px solid #0077B6',
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   logo: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#0077B6',
-    marginBottom: 5,
+    marginBottom: 2,
   },
   logoSubtitle: {
-    fontSize: 10,
+    fontSize: 8,
     color: '#64748B',
   },
   title: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#1E293B',
-    marginBottom: 20,
-    marginTop: 10,
+    marginBottom: 12,
+    marginTop: 5,
   },
   section: {
-    marginBottom: 15,
+    marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#0077B6',
-    marginBottom: 10,
+    marginBottom: 6,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   bienBox: {
     backgroundColor: '#F0F9FF',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 20,
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 10,
     border: '1px solid #BAE6FD',
   },
   bienLabel: {
-    fontSize: 10,
+    fontSize: 8,
     color: '#64748B',
-    marginBottom: 3,
+    marginBottom: 2,
   },
   bienValue: {
-    fontSize: 14,
+    fontSize: 11,
     color: '#1E293B',
     fontWeight: 'bold',
   },
   estimationBox: {
     backgroundColor: '#0077B6',
     borderRadius: 6,
-    padding: 12,
-    marginBottom: 15,
+    padding: 10,
+    marginBottom: 10,
     alignItems: 'center',
   },
   estimationLabel: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#BAE6FD',
-    marginBottom: 3,
+    marginBottom: 2,
   },
   estimationValue: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
   estimationSubValue: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#BAE6FD',
-    marginTop: 3,
+    marginTop: 2,
   },
   priceRange: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
-    padding: 10,
+    marginBottom: 10,
+    padding: 8,
     backgroundColor: '#F8FAFC',
     borderRadius: 6,
     border: '1px solid #E2E8F0',
@@ -94,78 +94,78 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   priceLabel: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#64748B',
     marginBottom: 2,
     textTransform: 'uppercase',
   },
   priceLow: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#10B981',
   },
   priceMid: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#0077B6',
   },
   priceHigh: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#F59E0B',
   },
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 20,
+    gap: 6,
+    marginBottom: 10,
   },
   statBox: {
     width: '48%',
-    padding: 12,
+    padding: 8,
     backgroundColor: '#F8FAFC',
     borderRadius: 6,
     border: '1px solid #E2E8F0',
   },
   statLabel: {
-    fontSize: 9,
+    fontSize: 7,
     color: '#64748B',
-    marginBottom: 3,
+    marginBottom: 2,
   },
   statValue: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#1E293B',
   },
   footer: {
     position: 'absolute',
-    bottom: 30,
-    left: 40,
-    right: 40,
+    bottom: 20,
+    left: 30,
+    right: 30,
     borderTop: '1px solid #E2E8F0',
-    paddingTop: 15,
+    paddingTop: 10,
   },
   footerText: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#94A3B8',
     textAlign: 'center',
-    marginBottom: 3,
+    marginBottom: 2,
   },
   date: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#64748B',
     textAlign: 'right',
-    marginTop: 10,
+    marginTop: 6,
   },
   disclaimer: {
     backgroundColor: '#FEF3C7',
-    padding: 12,
+    padding: 8,
     borderRadius: 6,
-    marginTop: 15,
+    marginTop: 10,
     border: '1px solid #FCD34D',
   },
   disclaimerText: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#92400E',
   },
 });
@@ -210,7 +210,7 @@ export default function RapportPDF({ result, formData }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Bien estimé</Text>
           <View style={styles.bienBox}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.bienLabel}>Type de bien</Text>
                 <Text style={styles.bienValue}>{formData.categorie} {formData.type_bien || ''}</Text>
@@ -219,10 +219,10 @@ export default function RapportPDF({ result, formData }) {
                 <Text style={styles.bienLabel}>Surface</Text>
                 <Text style={styles.bienValue}>{formData.surface} m²</Text>
               </View>
-            </View>
-            <View>
-              <Text style={styles.bienLabel}>Localisation</Text>
-              <Text style={styles.bienValue}>{formData.commune}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.bienLabel}>Localisation</Text>
+                <Text style={styles.bienValue}>{formData.commune}</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -277,7 +277,7 @@ export default function RapportPDF({ result, formData }) {
               <Text style={styles.statValue}>{formatPriceXPF(prixM2Haut)}</Text>
             </View>
           </View>
-          <View style={[styles.statBox, { width: '100%' }]}>
+          <View style={[styles.statBox, { width: '100%', marginTop: 6 }]}>
             <Text style={styles.statLabel}>Écart de prix</Text>
             <Text style={styles.statValue}>{formatPriceMF(ecartPrix)} (±{pourcentageEcart}% autour de l'estimation)</Text>
           </View>

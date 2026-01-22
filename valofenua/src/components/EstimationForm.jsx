@@ -3,14 +3,16 @@ import { Target, Loader2, AlertCircle } from 'lucide-react';
 import { getEstimation, COMMUNES, CATEGORIES, TYPES_BIEN } from '../utils/api';
 import EstimationResult from './EstimationResult';
 
-export default function EstimationForm() {
-  const [formData, setFormData] = useState({
-    commune: '',
-    categorie: '',
-    type_bien: '',
-    surface: '',
-  });
-  const [result, setResult] = useState(null);
+export default function EstimationForm({ initialState }) {
+  const [formData, setFormData] = useState(
+    initialState?.formData || {
+      commune: '',
+      categorie: '',
+      type_bien: '',
+      surface: '',
+    }
+  );
+  const [result, setResult] = useState(initialState?.result || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
