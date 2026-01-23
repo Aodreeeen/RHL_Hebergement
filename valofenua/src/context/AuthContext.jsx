@@ -18,6 +18,8 @@ export function AuthProvider({ children }) {
   const fetchProfile = useCallback(async (userId) => {
     if (!isMountedRef.current) return;
 
+    console.log('fetchProfile appelé pour userId:', userId);
+
     try {
       const { data, error } = await supabase
         .from('users_profiles')
@@ -25,14 +27,37 @@ export function AuthProvider({ children }) {
         .eq('id', userId)
         .single();
 
+      console.log('fetchProfile résultat:', { data, error });
+
       if (!isMountedRef.current) return;
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Erreur lors de la récupération du profil:', error);
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // Pas de profil trouvé - créer un profil vide
+          console.log('Aucun profil trouvé, création...');
+          const { data: newProfile, error: insertError } = await supabase
+            .from('users_profiles')
+            .insert([{ id: userId }])
+            .select()
+            .single();
+
+          if (insertError) {
+            console.error('Erreur création profil:', insertError);
+            setProfile(null);
+          } else {
+            console.log('Nouveau profil créé:', newProfile);
+            setProfile(newProfile);
+          }
+        } else {
+          console.error('Erreur lors de la récupération du profil:', error);
+          setProfile(null);
+        }
+      } else {
+        setProfile(data);
       }
-      setProfile(data || null);
     } catch (error) {
       console.error('Erreur fetchProfile:', error);
+      setProfile(null);
     }
   }, []);
 
@@ -41,8 +66,12 @@ export function AuthProvider({ children }) {
 
     // Fonction d'initialisation
     const initializeAuth = async () => {
+      console.log('initializeAuth démarré');
+
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
+
+        console.log('getSession résultat:', { session: session?.user?.email, error });
 
         if (!isMountedRef.current) return;
 
@@ -51,6 +80,7 @@ export function AuthProvider({ children }) {
           setUser(null);
           setProfile(null);
           setLoading(false);
+          initializedRef.current = true;
           return;
         }
 
@@ -65,9 +95,11 @@ export function AuthProvider({ children }) {
         initializedRef.current = true;
         if (isMountedRef.current) {
           setLoading(false);
+          console.log('Auth initialisé avec succès');
         }
       } catch (error) {
         console.error('Erreur initialisation auth:', error);
+        initializedRef.current = true;
         if (isMountedRef.current) {
           setUser(null);
           setProfile(null);
@@ -102,14 +134,14 @@ export function AuthProvider({ children }) {
     // Lancer l'initialisation
     initializeAuth();
 
-    // Timeout de sécurité
+    // Timeout de sécurité (réduit à 3 secondes)
     const timeoutId = setTimeout(() => {
       if (isMountedRef.current && !initializedRef.current) {
-        console.warn('Auth timeout - forçage fin du loading');
+        console.warn('Auth timeout (3s) - forçage fin du loading');
         setLoading(false);
         initializedRef.current = true;
       }
-    }, 5000);
+    }, 3000);
 
     return () => {
       isMountedRef.current = false;
