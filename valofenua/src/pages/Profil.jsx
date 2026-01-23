@@ -11,7 +11,10 @@ import {
   Loader2,
   CheckCircle,
   AlertCircle,
-  ImagePlus
+  ImagePlus,
+  MapPin,
+  Globe,
+  FileText
 } from 'lucide-react';
 
 export default function Profil() {
@@ -24,6 +27,9 @@ export default function Profil() {
     telephone: '',
     agence: '',
     numero_carte_pro: '',
+    adresse: '',
+    site_web: '',
+    description_agence: '',
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -39,6 +45,9 @@ export default function Profil() {
         telephone: profile.telephone || '',
         agence: profile.agence || '',
         numero_carte_pro: profile.numero_carte_pro || '',
+        adresse: profile.adresse || '',
+        site_web: profile.site_web || '',
+        description_agence: profile.description_agence || '',
       });
       setLogoPreview(profile.logo_url || null);
     }
@@ -320,6 +329,69 @@ export default function Profil() {
                   />
                 </div>
               </div>
+
+              {/* Adresse de l'agence */}
+              <div>
+                <label htmlFor="adresse" className="block text-sm font-medium text-slate-700 mb-2">
+                  Adresse de l'agence
+                </label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="text"
+                    id="adresse"
+                    name="adresse"
+                    value={formData.adresse}
+                    onChange={handleChange}
+                    placeholder="123 Rue du Commerce, 98713 Papeete"
+                    className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Site web */}
+              <div>
+                <label htmlFor="site_web" className="block text-sm font-medium text-slate-700 mb-2">
+                  Site web
+                </label>
+                <div className="relative">
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="url"
+                    id="site_web"
+                    name="site_web"
+                    value={formData.site_web}
+                    onChange={handleChange}
+                    placeholder="https://www.mon-agence.pf"
+                    className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] transition-colors"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section À propos de l'agence */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-[#0077B6]" />
+              À propos de l'agence
+            </h2>
+            <div>
+              <label htmlFor="description_agence" className="block text-sm font-medium text-slate-700 mb-2">
+                Description de votre agence
+              </label>
+              <textarea
+                id="description_agence"
+                name="description_agence"
+                value={formData.description_agence}
+                onChange={handleChange}
+                rows={4}
+                placeholder="Présentez votre agence en quelques lignes... (expertise, années d'expérience, zones couvertes, etc.)"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] transition-colors resize-none"
+              />
+              <p className="text-xs text-slate-500 mt-2">
+                Cette description apparaîtra sur vos rapports d'estimation PDF
+              </p>
             </div>
           </div>
 
