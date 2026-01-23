@@ -1,11 +1,14 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import Logo from './Logo';
+import { useAuth } from '../context/AuthContext';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout, loading } = useAuth();
 
   const navLinks = [
     { to: '/', label: 'Accueil' },
@@ -15,6 +18,12 @@ export default function Header() {
   ];
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = async () => {
+    await logout();
+    setIsMenuOpen(false);
+    navigate('/');
+  };
 
   return (
     <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50 border-b border-slate-100">
@@ -42,13 +51,53 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* CTA desktop */}
-          <Link
-            to="/estimation"
-            className="hidden md:inline-flex bg-[#0077B6] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#005f8a] transition-all duration-200 shadow-sm hover:shadow-md"
-          >
-            Estimer mon bien
-          </Link>
+          {/* Auth + CTA desktop */}
+          <div className="hidden md:flex items-center gap-4">
+            {!loading && (
+              <>
+                {user ? (
+                  <>
+                    <Link
+                      to="/profil"
+                      className={`flex items-center gap-2 font-medium transition-colors ${
+                        isActive('/profil')
+                          ? 'text-[#0077B6]'
+                          : 'text-slate-600 hover:text-[#0077B6]'
+                      }`}
+                    >
+                      <User className="w-5 h-5" />
+                      Mon profil
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 text-slate-600 hover:text-red-600 font-medium transition-colors"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      Déconnexion
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    to="/connexion"
+                    className={`flex items-center gap-2 font-medium transition-colors ${
+                      isActive('/connexion')
+                        ? 'text-[#0077B6]'
+                        : 'text-slate-600 hover:text-[#0077B6]'
+                    }`}
+                  >
+                    <User className="w-5 h-5" />
+                    Connexion
+                  </Link>
+                )}
+              </>
+            )}
+            <Link
+              to="/estimation"
+              className="bg-[#0077B6] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#005f8a] transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              Estimer mon bien
+            </Link>
+          </div>
 
           {/* Menu burger mobile */}
           <button
@@ -78,6 +127,49 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
+
+              {/* Liens d'authentification mobile */}
+              {!loading && (
+                <>
+                  {user ? (
+                    <>
+                      <Link
+                        to="/profil"
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                          isActive('/profil')
+                            ? 'bg-[#E0F4FF] text-[#0077B6]'
+                            : 'text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        <User className="w-5 h-5" />
+                        Mon profil
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="px-4 py-2 rounded-lg font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 text-left"
+                      >
+                        <LogOut className="w-5 h-5" />
+                        Déconnexion
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      to="/connexion"
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                        isActive('/connexion')
+                          ? 'bg-[#E0F4FF] text-[#0077B6]'
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <User className="w-5 h-5" />
+                      Connexion
+                    </Link>
+                  )}
+                </>
+              )}
+
               <Link
                 to="/estimation"
                 onClick={() => setIsMenuOpen(false)}
