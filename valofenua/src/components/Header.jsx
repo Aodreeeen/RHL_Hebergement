@@ -22,7 +22,7 @@ export default function Header() {
   const handleLogout = async () => {
     await logout();
     setIsMenuOpen(false);
-    navigate('/');
+    navigate('/connexion');
   };
 
   return (
@@ -69,8 +69,9 @@ export default function Header() {
                       Dashboard
                     </Link>
                     <button
+                      type="button"
                       onClick={handleLogout}
-                      className="flex items-center gap-2 text-slate-600 hover:text-red-600 font-medium transition-colors"
+                      className="flex items-center gap-2 text-slate-600 hover:text-red-600 font-medium transition-colors cursor-pointer"
                     >
                       <LogOut className="w-5 h-5" />
                       Déconnexion
@@ -146,8 +147,9 @@ export default function Header() {
                         Dashboard
                       </Link>
                       <button
+                        type="button"
                         onClick={handleLogout}
-                        className="px-4 py-2 rounded-lg font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 text-left"
+                        className="px-4 py-2 rounded-lg font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 text-left cursor-pointer"
                       >
                         <LogOut className="w-5 h-5" />
                         Déconnexion

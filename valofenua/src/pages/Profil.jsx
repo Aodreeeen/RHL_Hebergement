@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   User,
@@ -9,17 +8,14 @@ import {
   CreditCard,
   Upload,
   Save,
-  LogOut,
   Loader2,
   CheckCircle,
   AlertCircle,
-  ImagePlus,
-  Trash2
+  ImagePlus
 } from 'lucide-react';
 
 export default function Profil() {
-  const { user, profile, logout, updateProfile, uploadLogo, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const { user, profile, updateProfile, uploadLogo, loading: authLoading } = useAuth();
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -114,11 +110,6 @@ export default function Profil() {
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
-
   if (authLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -131,22 +122,13 @@ export default function Profil() {
     <main className="min-h-screen bg-slate-50 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         {/* En-tête */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-800">
-              Mon Profil
-            </h1>
-            <p className="text-slate-600 mt-1">
-              Gérez vos informations personnelles et professionnelles
-            </p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="hidden sm:inline">Déconnexion</span>
-          </button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-800">
+            Mon Profil
+          </h1>
+          <p className="text-slate-600 mt-1">
+            Gérez vos informations personnelles et professionnelles
+          </p>
         </div>
 
         {/* Message de feedback */}
