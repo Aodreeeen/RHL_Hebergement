@@ -9,9 +9,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [initialized, setInitialized] = useState(false);
 
-  // Fonction pour récupérer le profil (ou le créer s'il n'existe pas)
+  // Fonction pour récupérer ou créer le profil
   const fetchProfile = useCallback(async (userId, userEmail) => {
     try {
       const { data, error } = await supabase
@@ -20,65 +19,73 @@ export function AuthProvider({ children }) {
         .eq('id', userId)
         .single();
 
-      // PGRST116 = pas de ligne trouvée, on crée le profil
+      // Profil non trouvé, on le crée
       if (error && error.code === 'PGRST116') {
-        const { data: newProfile, error: insertError } = await supabase
+        const { data: newProfile } = await supabase
           .from('users_profiles')
           .insert([{ id: userId, email: userEmail }])
           .select()
           .single();
 
-        if (!insertError && newProfile) {
+        if (newProfile) {
           setProfile(newProfile);
         }
         return;
       }
 
-      if (!error && data) {
+      if (data) {
         setProfile(data);
       }
-    } catch (error) {
-      console.error('Erreur fetchProfile:', error);
+    } catch (err) {
+      console.error('Erreur fetchProfile:', err);
     }
   }, []);
 
+  // Initialisation au chargement
   useEffect(() => {
-    let mounted = true;
+    let isMounted = true;
 
-    // Initialisation de l'authentification
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        // Récupérer la session existante
+        const { data: { session }, error } = await supabase.auth.getSession();
 
-        if (!mounted) return;
+        if (error) {
+          console.error('Erreur getSession:', error);
+          if (isMounted) {
+            setUser(null);
+            setProfile(null);
+            setLoading(false);
+          }
+          return;
+        }
 
-        if (session?.user) {
-          setUser(session.user);
-          await fetchProfile(session.user.id, session.user.email);
-        } else {
+        if (isMounted) {
+          if (session?.user) {
+            setUser(session.user);
+            await fetchProfile(session.user.id, session.user.email);
+          } else {
+            setUser(null);
+            setProfile(null);
+          }
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Erreur initAuth:', err);
+        if (isMounted) {
           setUser(null);
           setProfile(null);
-        }
-      } catch (error) {
-        console.error('Erreur init auth:', error);
-        if (mounted) {
-          setUser(null);
-          setProfile(null);
-        }
-      } finally {
-        if (mounted) {
-          setInitialized(true);
           setLoading(false);
         }
       }
     };
 
-    // Écouter les changements d'authentification
+    // Écouter les changements d'auth (connexion/déconnexion)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (!mounted) return;
+        if (!isMounted) return;
 
-        // Ignorer l'événement initial, on gère avec getSession
+        // Ne pas traiter l'événement initial (géré par getSession)
         if (event === 'INITIAL_SESSION') return;
 
         if (session?.user) {
@@ -91,10 +98,19 @@ export function AuthProvider({ children }) {
       }
     );
 
+    // Timeout de sécurité (5 secondes max)
+    const timeout = setTimeout(() => {
+      if (isMounted && loading) {
+        console.warn('Auth timeout - forçage du loading à false');
+        setLoading(false);
+      }
+    }, 5000);
+
     initAuth();
 
     return () => {
-      mounted = false;
+      isMounted = false;
+      clearTimeout(timeout);
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
