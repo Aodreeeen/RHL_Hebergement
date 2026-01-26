@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { formatPriceXPF, formatPriceMF } from '../utils/formatPrice';
 
 // Styles pour le PDF - Version compacte pour tenir sur une page
@@ -12,6 +12,20 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderBottom: '2px solid #0077B6',
     paddingBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  headerRight: {
+    alignItems: 'flex-end',
+  },
+  agentLogo: {
+    width: 60,
+    height: 60,
+    objectFit: 'contain',
   },
   logo: {
     fontSize: 22,
@@ -40,6 +54,57 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  // Section Agent
+  agentSection: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 12,
+    border: '1px solid #E2E8F0',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  agentLogoContainer: {
+    width: 50,
+    height: 50,
+    marginRight: 12,
+    borderRadius: 6,
+    overflow: 'hidden',
+    backgroundColor: '#FFFFFF',
+    border: '1px solid #E2E8F0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  agentLogoSmall: {
+    width: 46,
+    height: 46,
+    objectFit: 'contain',
+  },
+  agentInfo: {
+    flex: 1,
+  },
+  agentTitle: {
+    fontSize: 7,
+    color: '#64748B',
+    marginBottom: 2,
+    textTransform: 'uppercase',
+  },
+  agentName: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#1E293B',
+    marginBottom: 2,
+  },
+  agentAgency: {
+    fontSize: 9,
+    color: '#0077B6',
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  agentContact: {
+    fontSize: 8,
+    color: '#64748B',
   },
   bienBox: {
     backgroundColor: '#F0F9FF',
@@ -192,6 +257,21 @@ const styles = StyleSheet.create({
     borderTop: '1px solid #E2E8F0',
     paddingTop: 10,
   },
+  footerAgent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  footerAgentInfo: {
+    fontSize: 8,
+    color: '#475569',
+    fontWeight: 'bold',
+  },
+  footerAgentContact: {
+    fontSize: 7,
+    color: '#64748B',
+  },
   footerText: {
     fontSize: 7,
     color: '#94A3B8',
@@ -229,8 +309,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function RapportPDF({ result, formData, adjustedPrice }) {
+export default function RapportPDF({ result, formData, adjustedPrice, agentProfile }) {
   const { prix_bas, prix_moyen, prix_haut, prix_m2_moyen } = result;
+
+  // Informations de l'agent
+  const hasAgentInfo = agentProfile && (agentProfile.nom || agentProfile.agence);
+  const agentFullName = agentProfile ? [agentProfile.prenom, agentProfile.nom].filter(Boolean).join(' ') : '';
+  const agentAgency = agentProfile?.agence || '';
+  const agentPhone = agentProfile?.telephone || '';
+  const agentEmail = agentProfile?.email || '';
+  const agentLogo = agentProfile?.logo_url || null;
 
   // Pour les terrains, on utilise surface_terrain, sinon surface habitable
   const surfacePrincipale = formData.categorie === 'Terrain' ? formData.surface_terrain : formData.surface;
@@ -283,11 +371,39 @@ export default function RapportPDF({ result, formData, adjustedPrice }) {
       <Page size="A4" style={styles.page}>
         {/* En-tête */}
         <View style={styles.header}>
-          <Text style={styles.logo}>ValoFenua</Text>
-          <Text style={styles.logoSubtitle}>Estimation immobilière en Polynésie française</Text>
+          <View style={styles.headerLeft}>
+            <Text style={styles.logo}>ValoFenua</Text>
+            <Text style={styles.logoSubtitle}>Estimation immobilière en Polynésie française</Text>
+          </View>
+          {agentLogo && (
+            <View style={styles.headerRight}>
+              <Image style={styles.agentLogo} src={agentLogo} />
+            </View>
+          )}
         </View>
 
         <Text style={styles.title}>Rapport d'estimation immobilière</Text>
+
+        {/* Section Agent */}
+        {hasAgentInfo && (
+          <View style={styles.agentSection}>
+            {agentLogo && (
+              <View style={styles.agentLogoContainer}>
+                <Image style={styles.agentLogoSmall} src={agentLogo} />
+              </View>
+            )}
+            <View style={styles.agentInfo}>
+              <Text style={styles.agentTitle}>Estimation réalisée par</Text>
+              {agentFullName && <Text style={styles.agentName}>{agentFullName}</Text>}
+              {agentAgency && <Text style={styles.agentAgency}>{agentAgency}</Text>}
+              {(agentPhone || agentEmail) && (
+                <Text style={styles.agentContact}>
+                  {[agentPhone, agentEmail].filter(Boolean).join(' • ')}
+                </Text>
+              )}
+            </View>
+          </View>
+        )}
 
         {/* Description du bien */}
         <View style={styles.section}>
@@ -410,6 +526,16 @@ export default function RapportPDF({ result, formData, adjustedPrice }) {
 
         {/* Footer */}
         <View style={styles.footer}>
+          {hasAgentInfo && (
+            <View style={styles.footerAgent}>
+              <Text style={styles.footerAgentInfo}>
+                {agentAgency || agentFullName}
+              </Text>
+              <Text style={styles.footerAgentContact}>
+                {[agentPhone, agentEmail].filter(Boolean).join(' • ')}
+              </Text>
+            </View>
+          )}
           <Text style={styles.footerText}>ValoFenua - Estimation immobilière en Polynésie française</Text>
         </View>
       </Page>
