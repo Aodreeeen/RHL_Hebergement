@@ -3,10 +3,12 @@ import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import { ArrowLeft, Download, FileText, Loader2 } from 'lucide-react';
 import RapportPDF from '../components/RapportPDF';
 import { formatPriceMF } from '../utils/formatPrice';
+import { useAuth } from '../context/AuthContext';
 
 export default function RapportEstimation() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const { result, formData, adjustedPrice } = location.state || {};
 
   // Si pas de données, rediriger vers l'estimation
@@ -86,7 +88,7 @@ export default function RapportEstimation() {
               </p>
             </div>
             <PDFDownloadLink
-              document={<RapportPDF result={result} formData={formData} adjustedPrice={adjustedPrice} />}
+              document={<RapportPDF result={result} formData={formData} adjustedPrice={adjustedPrice} agentProfile={profile} />}
               fileName={getFileName()}
               className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#0077B6] to-[#005f8a] text-white px-6 py-4 rounded-xl font-medium hover:from-[#005f8a] hover:to-[#004a6d] transition-all shadow-lg hover:shadow-xl"
             >
@@ -131,7 +133,7 @@ export default function RapportEstimation() {
               }}
               showToolbar={false}
             >
-              <RapportPDF result={result} formData={formData} adjustedPrice={adjustedPrice} />
+              <RapportPDF result={result} formData={formData} adjustedPrice={adjustedPrice} agentProfile={profile} />
             </PDFViewer>
           </div>
 
@@ -181,7 +183,7 @@ export default function RapportEstimation() {
 
               {/* Bouton télécharger mobile */}
               <PDFDownloadLink
-                document={<RapportPDF result={result} formData={formData} adjustedPrice={adjustedPrice} />}
+                document={<RapportPDF result={result} formData={formData} adjustedPrice={adjustedPrice} agentProfile={profile} />}
                 fileName={getFileName()}
                 className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#0077B6] to-[#005f8a] text-white px-6 py-4 rounded-xl font-medium hover:from-[#005f8a] hover:to-[#004a6d] transition-all shadow-lg"
               >
