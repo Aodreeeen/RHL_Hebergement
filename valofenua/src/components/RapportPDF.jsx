@@ -199,10 +199,9 @@ const styles = StyleSheet.create({
   },
   // Footer avec infos agence complètes
   footer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 30,
-    right: 30,
+    marginTop: 20,
+    borderTop: '1px solid #E2E8F0',
+    paddingTop: 15,
   },
   aboutSection: {
     backgroundColor: '#F8FAFC',
@@ -224,8 +223,7 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
   },
   footerDivider: {
-    borderTop: '1px solid #E2E8F0',
-    paddingTop: 10,
+    marginTop: 10,
   },
   footerAgency: {
     flexDirection: 'row',
