@@ -20,13 +20,6 @@ export default function SimilarOffers({ comparables }) {
     return photoUrl;
   };
 
-  // Nettoyer la description (enlever les \n et espaces multiples)
-  const cleanDescription = (text) => {
-    if (!text) return 'Aucune description disponible';
-    // Remplacer les \n par des espaces pour un affichage propre
-    return text.replace(/\\n/g, ' ').replace(/\s+/g, ' ').trim();
-  };
-
   // Composant pour une seule carte d'offre avec gestion d'état pour l'image
   const OfferCard = ({ offer, index }) => {
     const [imageError, setImageError] = useState(false);
@@ -75,7 +68,7 @@ export default function SimilarOffers({ comparables }) {
           </div>
 
           {/* Surface et Commune côte à côte */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2 text-slate-700 bg-slate-50 rounded-lg px-3 py-2">
               <Ruler className="w-4 h-4 text-slate-500" />
               <p className="font-semibold text-sm">
@@ -88,13 +81,6 @@ export default function SimilarOffers({ comparables }) {
                 {offer.commune}
               </p>
             </div>
-          </div>
-
-          {/* Description */}
-          <div className="border-t border-slate-100 pt-4">
-            <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
-              {cleanDescription(offer.description)}
-            </p>
           </div>
         </div>
       </div>
