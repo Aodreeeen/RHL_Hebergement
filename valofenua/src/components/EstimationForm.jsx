@@ -302,11 +302,11 @@ export default function EstimationForm({ initialState }) {
             </p>
 
             {bienPhoto ? (
-              <div className="relative">
+              <div className="relative inline-block">
                 <img
                   src={bienPhoto}
                   alt="Photo du bien"
-                  className="w-full h-40 object-cover rounded-xl border border-slate-200"
+                  className="max-w-full max-h-48 object-contain rounded-xl border border-slate-200"
                 />
                 <button
                   type="button"
