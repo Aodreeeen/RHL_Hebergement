@@ -291,8 +291,10 @@ export default function EstimationForm({ initialState }) {
               />
             </div>
           )}
+        </div>
 
-          {/* Photo du bien (optionnel) */}
+        {/* Photo du bien (optionnel) - en dehors du div conditionnel */}
+        {formData.categorie && (
           <div className="animate-fadeIn">
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Photo du bien <span className="text-slate-400 font-normal">(optionnel)</span>
@@ -336,7 +338,7 @@ export default function EstimationForm({ initialState }) {
               className="hidden"
             />
           </div>
-        </div>
+        )}
 
         {/* Erreur */}
         {error && (
