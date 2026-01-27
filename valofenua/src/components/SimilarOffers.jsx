@@ -82,6 +82,7 @@ export default function SimilarOffers({ comparables }) {
               </p>
             </div>
           </div>
+
         </div>
       </div>
     );
