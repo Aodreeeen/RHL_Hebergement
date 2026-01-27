@@ -397,6 +397,22 @@ export default function Profil({ embedded = false }) {
             </div>
           </div>
 
+          {/* Message de feedback (en bas, visible après enregistrement) */}
+          {message.text && (
+            <div className={`flex items-center gap-3 p-4 rounded-lg ${
+              message.type === 'success'
+                ? 'bg-green-50 border border-green-200 text-green-700'
+                : 'bg-red-50 border border-red-200 text-red-700'
+            }`}>
+              {message.type === 'success' ? (
+                <CheckCircle className="w-5 h-5 flex-shrink-0" />
+              ) : (
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              )}
+              <span>{message.text}</span>
+            </div>
+          )}
+
           {/* Bouton Enregistrer */}
           <button
             type="submit"
