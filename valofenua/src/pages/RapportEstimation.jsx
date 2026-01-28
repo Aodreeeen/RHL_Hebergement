@@ -66,7 +66,7 @@ export default function RapportEstimation() {
       <div className="max-w-6xl mx-auto">
         {/* Bouton retour */}
         <button
-          onClick={() => navigate('/estimation', { state: { result, formData } })}
+          onClick={() => navigate('/estimation', { state: { result, formData, adjustedPrice, bienPhoto } })}
           className="inline-flex items-center gap-2 text-slate-600 hover:text-[#0077B6] transition-colors mb-6"
         >
           <ArrowLeft className="w-5 h-5" />
