@@ -7,12 +7,12 @@ import SimilarOffers from './SimilarOffers';
 import { formatPriceXPF, formatPriceMF } from '../utils/formatPrice';
 import { updateEstimation } from '../utils/estimations';
 
-export default function EstimationResult({ result, formData, onReset, estimationId, bienPhoto }) {
+export default function EstimationResult({ result, formData, onReset, estimationId, bienPhoto, initialAdjustedPrice }) {
   const navigate = useNavigate();
   const { prix_bas, prix_moyen, prix_haut, prix_m2_moyen } = result;
 
-  // État pour le prix ajusté par l'agent
-  const [adjustedPrice, setAdjustedPrice] = useState(prix_moyen);
+  // État pour le prix ajusté par l'agent (utilise initialAdjustedPrice si fourni)
+  const [adjustedPrice, setAdjustedPrice] = useState(initialAdjustedPrice || prix_moyen);
 
   // Pour les terrains, on utilise surface_terrain, sinon surface habitable
   const surfacePrincipale = formData.categorie === 'Terrain' ? formData.surface_terrain : formData.surface;

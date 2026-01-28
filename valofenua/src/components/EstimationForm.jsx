@@ -19,7 +19,8 @@ export default function EstimationForm({ initialState }) {
   const [result, setResult] = useState(initialState?.result || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [bienPhoto, setBienPhoto] = useState(null);
+  const [bienPhoto, setBienPhoto] = useState(initialState?.bienPhoto || null);
+  const [initialAdjustedPrice] = useState(initialState?.adjustedPrice || null);
   const currentEstimationId = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -185,6 +186,7 @@ export default function EstimationForm({ initialState }) {
           onReset={handleReset}
           estimationId={currentEstimationId.current}
           bienPhoto={bienPhoto}
+          initialAdjustedPrice={initialAdjustedPrice}
         />
       </div>
     );
