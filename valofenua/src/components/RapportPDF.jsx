@@ -265,8 +265,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function RapportPDF({ result, formData, adjustedPrice, agentProfile, bienPhoto }) {
+export default function RapportPDF({ result, formData, adjustedPrice, agentProfile, bienPhoto, sectionVisibility }) {
   const { prix_bas, prix_moyen, prix_haut, prix_m2_moyen } = result;
+
+  // Visibilité par défaut si non fournie
+  const visibility = sectionVisibility || {
+    marketTrends: true,
+    statsGrid: true,
+    priceGap: true,
+    similarOffers: true,
+    note: true,
+  };
 
   // Informations de l'agent et de l'agence
   const agentFullName = agentProfile ? [agentProfile.prenom, agentProfile.nom].filter(Boolean).join(' ') : '';
@@ -387,8 +396,8 @@ export default function RapportPDF({ result, formData, adjustedPrice, agentProfi
           </View>
         </View>
 
-        {/* Fourchette de prix - seulement si le prix est dans la fourchette */}
-        {showPriceRange && (
+        {/* Fourchette de prix - seulement si visible et prix dans la fourchette */}
+        {visibility.priceGap && showPriceRange && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Fourchette de prix du marché</Text>
             <View style={styles.priceRange}>
@@ -409,35 +418,39 @@ export default function RapportPDF({ result, formData, adjustedPrice, agentProfi
         )}
 
         {/* Statistiques du marché */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Détails du marché</Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statBox}>
-              <Text style={styles.statLabel}>Prix/m² du secteur</Text>
-              <Text style={styles.statValue}>{formatPriceXPF(prix_m2_moyen)}</Text>
-            </View>
-            <View style={styles.statBox}>
-              <Text style={styles.statLabel}>{getSurfaceLabel()}</Text>
-              <Text style={styles.statValue}>{surfacePrincipale} m²</Text>
-            </View>
-            <View style={styles.statBox}>
-              <Text style={styles.statLabel}>Prix/m² (fourchette basse)</Text>
-              <Text style={styles.statValue}>{formatPriceXPF(prixM2Bas)}</Text>
-            </View>
-            <View style={styles.statBox}>
-              <Text style={styles.statLabel}>Prix/m² (fourchette haute)</Text>
-              <Text style={styles.statValue}>{formatPriceXPF(prixM2Haut)}</Text>
+        {visibility.statsGrid && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Détails du marché</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statBox}>
+                <Text style={styles.statLabel}>Prix/m² du secteur</Text>
+                <Text style={styles.statValue}>{formatPriceXPF(prix_m2_moyen)}</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={styles.statLabel}>{getSurfaceLabel()}</Text>
+                <Text style={styles.statValue}>{surfacePrincipale} m²</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={styles.statLabel}>Prix/m² (fourchette basse)</Text>
+                <Text style={styles.statValue}>{formatPriceXPF(prixM2Bas)}</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={styles.statLabel}>Prix/m² (fourchette haute)</Text>
+                <Text style={styles.statValue}>{formatPriceXPF(prixM2Haut)}</Text>
+              </View>
             </View>
           </View>
-        </View>
+        )}
 
         {/* Avertissement */}
-        <View style={styles.disclaimer}>
-          <Text style={styles.disclaimerText}>
-            Cette estimation est basée sur les données du marché immobilier polynésien.
-            Elle est fournie à titre indicatif et ne constitue pas une évaluation officielle.
-          </Text>
-        </View>
+        {visibility.note && (
+          <View style={styles.disclaimer}>
+            <Text style={styles.disclaimerText}>
+              Cette estimation est basée sur les données du marché immobilier polynésien.
+              Elle est fournie à titre indicatif et ne constitue pas une évaluation officielle.
+            </Text>
+          </View>
+        )}
 
         {/* Date */}
         <Text style={styles.date}>Rapport réalisé le {formatDate()}</Text>
