@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function RapportPDF({ result, formData, adjustedPrice, agentProfile, bienPhoto, sectionVisibility }) {
+export default function RapportPDF({ result, formData, adjustedPrice, agentProfile, bienPhoto, sectionVisibility, hiddenComparables = [] }) {
   const { prix_bas, prix_moyen, prix_haut, prix_m2_moyen } = result;
 
   // Visibilité par défaut si non fournie
@@ -417,6 +417,11 @@ export default function RapportPDF({ result, formData, adjustedPrice, agentProfi
     similarOffers: true,
     note: true,
   };
+
+  // Filtrer les biens similaires en excluant les masqués
+  const visibleComparables = result.comparables
+    ? result.comparables.filter((_, index) => !hiddenComparables.includes(index)).slice(0, 4)
+    : [];
 
   // Informations de l'agent et de l'agence
   const agentFullName = agentProfile ? [agentProfile.prenom, agentProfile.nom].filter(Boolean).join(' ') : '';
@@ -663,11 +668,11 @@ export default function RapportPDF({ result, formData, adjustedPrice, agentProfi
         })()}
 
         {/* Biens similaires avec images */}
-        {visibility.similarOffers && result.comparables && result.comparables.length > 0 && (
+        {visibility.similarOffers && visibleComparables.length > 0 && (
           <View style={styles.similarOffersSection}>
             <Text style={styles.sectionTitle}>Biens similaires sur le marché</Text>
             <View style={styles.similarOffersGrid}>
-              {result.comparables.slice(0, 4).map((offer, index) => {
+              {visibleComparables.map((offer, index) => {
                 const photoUrl = cleanPhotoUrl(offer.photo_url);
                 return (
                   <View key={index} style={styles.similarOfferCard}>
