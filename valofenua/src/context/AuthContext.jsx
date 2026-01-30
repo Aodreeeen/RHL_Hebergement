@@ -178,37 +178,37 @@ export function AuthProvider({ children }) {
     if (!user) return { error: { message: 'Non connecté' } };
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/logo.${fileExt}`;
+      // Utiliser un nom fixe pour toujours écraser l'ancien
+      const fileName = `${user.id}/logo`;
 
-      // Supprimer l'ancien logo s'il existe
-      if (profile?.logo_url) {
-        const oldPath = profile.logo_url.split('/').slice(-2).join('/');
-        await supabase.storage.from('logos').remove([oldPath]);
-      }
-
-      // Upload du nouveau logo
+      // Upload du nouveau logo (écrase l'ancien grâce à upsert)
       const { error: uploadError } = await supabase.storage
         .from('logos')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, file, {
+          upsert: true,
+          contentType: file.type
+        });
 
       if (uploadError) {
+        console.error('Erreur upload:', uploadError);
         return { error: uploadError };
       }
 
-      // Récupérer l'URL publique
+      // Récupérer l'URL publique avec un timestamp pour éviter le cache
       const { data: { publicUrl } } = supabase.storage
         .from('logos')
         .getPublicUrl(fileName);
 
+      const urlWithCache = `${publicUrl}?t=${Date.now()}`;
+
       // Mettre à jour le profil avec l'URL du logo
-      const { data, error } = await updateProfile({ logo_url: publicUrl });
-      return { data, error, url: publicUrl };
+      const { data, error } = await updateProfile({ logo_url: urlWithCache });
+      return { data, error, url: urlWithCache };
     } catch (error) {
       console.error('Erreur uploadLogo:', error);
       return { error };
     }
-  }, [user, profile, updateProfile]);
+  }, [user, updateProfile]);
 
   const refreshProfile = useCallback(() => {
     if (user) {
