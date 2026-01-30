@@ -1,5 +1,6 @@
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { formatPriceXPF, formatPriceMF } from '../utils/formatPrice';
+import { getHistoriqueCommune, getVariation } from '../data/prixHistorique';
 
 // Styles pour le PDF - Design agence
 const styles = StyleSheet.create({
@@ -263,6 +264,95 @@ const styles = StyleSheet.create({
   footerRight: {
     alignItems: 'flex-end',
   },
+  // Tendance du marché
+  marketTrendsSection: {
+    marginBottom: 12,
+  },
+  marketTrendsTable: {
+    border: '1px solid #E2E8F0',
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  marketTrendsHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#0077B6',
+    padding: 6,
+  },
+  marketTrendsHeaderCell: {
+    flex: 1,
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  marketTrendsRow: {
+    flexDirection: 'row',
+    padding: 5,
+    borderBottom: '1px solid #E2E8F0',
+  },
+  marketTrendsRowAlt: {
+    flexDirection: 'row',
+    padding: 5,
+    borderBottom: '1px solid #E2E8F0',
+    backgroundColor: '#F8FAFC',
+  },
+  marketTrendsCell: {
+    flex: 1,
+    fontSize: 8,
+    color: '#1E293B',
+    textAlign: 'center',
+  },
+  marketTrendsVariation: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    backgroundColor: '#F0FDF4',
+    borderRadius: 6,
+    border: '1px solid #BBF7D0',
+  },
+  variationText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#166534',
+  },
+  // Biens similaires
+  similarOffersSection: {
+    marginBottom: 12,
+  },
+  similarOffersGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  similarOfferCard: {
+    width: '48%',
+    border: '1px solid #E2E8F0',
+    borderRadius: 6,
+    padding: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  similarOfferType: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#0077B6',
+    marginBottom: 4,
+  },
+  similarOfferPrice: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#1E293B',
+    marginBottom: 4,
+  },
+  similarOfferDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  similarOfferDetail: {
+    fontSize: 7,
+    color: '#64748B',
+  },
 });
 
 export default function RapportPDF({ result, formData, adjustedPrice, agentProfile, bienPhoto, sectionVisibility }) {
@@ -438,6 +528,56 @@ export default function RapportPDF({ result, formData, adjustedPrice, agentProfi
                 <Text style={styles.statLabel}>Prix/m² (fourchette haute)</Text>
                 <Text style={styles.statValue}>{formatPriceXPF(prixM2Haut)}</Text>
               </View>
+            </View>
+          </View>
+        )}
+
+        {/* Tendance du marché */}
+        {visibility.marketTrends && formData.commune && (() => {
+          const historique = getHistoriqueCommune(formData.commune);
+          const variation = getVariation(formData.commune);
+          if (historique.length === 0) return null;
+          return (
+            <View style={styles.marketTrendsSection}>
+              <Text style={styles.sectionTitle}>Évolution du prix au m² - {formData.commune}</Text>
+              <View style={styles.marketTrendsTable}>
+                <View style={styles.marketTrendsHeader}>
+                  {historique.map((item) => (
+                    <Text key={item.annee} style={styles.marketTrendsHeaderCell}>{item.annee}</Text>
+                  ))}
+                </View>
+                <View style={styles.marketTrendsRow}>
+                  {historique.map((item) => (
+                    <Text key={item.annee} style={styles.marketTrendsCell}>{formatPriceXPF(item.prix)}</Text>
+                  ))}
+                </View>
+              </View>
+              <View style={styles.marketTrendsVariation}>
+                <Text style={styles.variationText}>
+                  Évolution 2020-2025 : +{variation.pourcentage}%
+                </Text>
+              </View>
+            </View>
+          );
+        })()}
+
+        {/* Biens similaires */}
+        {visibility.similarOffers && result.comparables && result.comparables.length > 0 && (
+          <View style={styles.similarOffersSection}>
+            <Text style={styles.sectionTitle}>Biens similaires sur le marché</Text>
+            <View style={styles.similarOffersGrid}>
+              {result.comparables.slice(0, 4).map((offer, index) => (
+                <View key={index} style={styles.similarOfferCard}>
+                  <Text style={styles.similarOfferType}>{offer.type_bien}</Text>
+                  <Text style={styles.similarOfferPrice}>
+                    {offer.prix_formatte || `${(offer.prix / 1000000).toFixed(1)} MF`}
+                  </Text>
+                  <View style={styles.similarOfferDetails}>
+                    <Text style={styles.similarOfferDetail}>{offer.surface} m²</Text>
+                    <Text style={styles.similarOfferDetail}>{offer.commune}</Text>
+                  </View>
+                </View>
+              ))}
             </View>
           </View>
         )}
