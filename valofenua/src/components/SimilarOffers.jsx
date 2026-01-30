@@ -49,7 +49,7 @@ export default function SimilarOffers({ comparables, hiddenComparables = [], onT
           </button>
         )}
         {/* Image du bien */}
-        <div className="h-64 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
+        <div className="h-80 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
           {cleanedPhotoUrl && !imageError ? (
             <img
               src={cleanedPhotoUrl}

@@ -289,11 +289,11 @@ export default function MesEstimations() {
                         <img
                           src={estimation.photo_url}
                           alt="Photo du bien"
-                          className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                          className="w-24 h-24 rounded-xl object-cover flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-12 h-12 bg-[#E0F4FF] rounded-xl flex items-center justify-center flex-shrink-0">
-                          <Icon className="w-6 h-6 text-[#0077B6]" />
+                        <div className="w-24 h-24 bg-[#E0F4FF] rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-10 h-10 text-[#0077B6]" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
