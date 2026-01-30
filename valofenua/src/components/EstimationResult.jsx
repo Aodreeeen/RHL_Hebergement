@@ -41,7 +41,6 @@ export default function EstimationResult({ result, formData, onReset, estimation
     statsGrid: true,
     priceGap: true,
     similarOffers: true,
-    note: true,
   });
 
   const surfacePrincipale = formData.categorie === 'Terrain' ? formData.surface_terrain : formData.surface;
@@ -227,18 +226,12 @@ export default function EstimationResult({ result, formData, onReset, estimation
         <SimilarOffers comparables={result.comparables} />
       </ToggleableSection>
 
-      {/* Note - TOGGLEABLE */}
-      <ToggleableSection
-        id="note"
-        visible={sectionVisibility.note}
-        onToggle={toggleSection}
-      >
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <p className="text-sm text-amber-800">
-            <span className="font-semibold">Information :</span> Cette estimation est basée sur les annonces actives du marché immobilier polynésien et ne constitue pas une évaluation officielle.
-          </p>
-        </div>
-      </ToggleableSection>
+      {/* Note - toujours affichée (non toggleable) */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+        <p className="text-sm text-amber-800">
+          <span className="font-semibold">Information :</span> Cette estimation est basée sur les annonces actives du marché immobilier polynésien et ne constitue pas une évaluation officielle.
+        </p>
+      </div>
 
       {/* Nouvelle estimation */}
       <div className="flex justify-center">
