@@ -1,6 +1,15 @@
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image, Svg, Path, Line, Rect } from '@react-pdf/renderer';
 import { formatPriceXPF, formatPriceMF } from '../utils/formatPrice';
 import { getHistoriqueCommune, getVariation } from '../data/prixHistorique';
+
+// Nettoyer l'URL de la photo si elle commence par "photo_url:"
+const cleanPhotoUrl = (photoUrl) => {
+  if (!photoUrl) return null;
+  if (photoUrl.startsWith('photo_url:')) {
+    return photoUrl.substring('photo_url:'.length).trim();
+  }
+  return photoUrl;
+};
 
 // Styles pour le PDF - Design agence
 const styles = StyleSheet.create({
@@ -268,54 +277,73 @@ const styles = StyleSheet.create({
   marketTrendsSection: {
     marginBottom: 12,
   },
-  marketTrendsTable: {
-    border: '1px solid #E2E8F0',
+  marketTrendsBox: {
+    backgroundColor: '#FFFFFF',
     borderRadius: 6,
-    overflow: 'hidden',
+    padding: 12,
+    border: '1px solid #E2E8F0',
   },
   marketTrendsHeader: {
     flexDirection: 'row',
-    backgroundColor: '#0077B6',
-    padding: 6,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  marketTrendsHeaderCell: {
-    flex: 1,
-    fontSize: 8,
+  marketTrendsTitle: {
+    fontSize: 10,
     fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-  },
-  marketTrendsRow: {
-    flexDirection: 'row',
-    padding: 5,
-    borderBottom: '1px solid #E2E8F0',
-  },
-  marketTrendsRowAlt: {
-    flexDirection: 'row',
-    padding: 5,
-    borderBottom: '1px solid #E2E8F0',
-    backgroundColor: '#F8FAFC',
-  },
-  marketTrendsCell: {
-    flex: 1,
-    fontSize: 8,
     color: '#1E293B',
-    textAlign: 'center',
   },
-  marketTrendsVariation: {
-    marginTop: 8,
+  marketTrendsCommune: {
+    fontSize: 8,
+    color: '#64748B',
+  },
+  marketTrendsContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-    backgroundColor: '#F0FDF4',
-    borderRadius: 6,
-    border: '1px solid #BBF7D0',
+    gap: 15,
+  },
+  marketTrendsChart: {
+    flex: 1,
+  },
+  marketTrendsYears: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+    paddingHorizontal: 4,
+  },
+  marketTrendsYear: {
+    fontSize: 7,
+    color: '#64748B',
+  },
+  marketTrendsStats: {
+    alignItems: 'flex-end',
+    minWidth: 70,
+  },
+  marketTrendsVariation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
   },
   variationText: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#10B981',
+  },
+  variationTextNegative: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#EF4444',
+  },
+  marketTrendsSince: {
+    fontSize: 7,
+    color: '#64748B',
+    marginBottom: 4,
+  },
+  marketTrendsCurrentPrice: {
     fontSize: 9,
     fontWeight: 'bold',
-    color: '#166534',
+    color: '#1E293B',
   },
   // Biens similaires
   similarOffersSection: {
@@ -330,17 +358,39 @@ const styles = StyleSheet.create({
     width: '48%',
     border: '1px solid #E2E8F0',
     borderRadius: 6,
-    padding: 8,
+    overflow: 'hidden',
     backgroundColor: '#FFFFFF',
   },
+  similarOfferImageContainer: {
+    height: 70,
+    backgroundColor: '#F1F5F9',
+  },
+  similarOfferImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  similarOfferNoImage: {
+    height: 70,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  similarOfferNoImageText: {
+    fontSize: 7,
+    color: '#94A3B8',
+  },
+  similarOfferContent: {
+    padding: 8,
+  },
   similarOfferType: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold',
     color: '#0077B6',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   similarOfferPrice: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#1E293B',
     marginBottom: 4,
@@ -532,52 +582,118 @@ export default function RapportPDF({ result, formData, adjustedPrice, agentProfi
           </View>
         )}
 
-        {/* Tendance du marché */}
+        {/* Tendance du marché avec graphique */}
         {visibility.marketTrends && formData.commune && (() => {
           const historique = getHistoriqueCommune(formData.commune);
           const variation = getVariation(formData.commune);
           if (historique.length === 0) return null;
+
+          // Dimensions du graphique
+          const width = 200;
+          const height = 50;
+          const padding = { top: 5, right: 5, bottom: 5, left: 5 };
+
+          // Calculer les échelles
+          const prices = historique.map(d => d.prix);
+          const minPrice = Math.min(...prices) * 0.95;
+          const maxPrice = Math.max(...prices) * 1.05;
+
+          const xScale = (index) => {
+            return padding.left + (index / (historique.length - 1)) * (width - padding.left - padding.right);
+          };
+
+          const yScale = (price) => {
+            return height - padding.bottom - ((price - minPrice) / (maxPrice - minPrice)) * (height - padding.top - padding.bottom);
+          };
+
+          // Générer le path pour la ligne
+          const linePath = historique
+            .map((d, i) => `${i === 0 ? 'M' : 'L'} ${xScale(i)} ${yScale(d.prix)}`)
+            .join(' ');
+
+          // Path pour la zone sous la courbe (area)
+          const areaPath = `${linePath} L ${xScale(historique.length - 1)} ${height - padding.bottom} L ${padding.left} ${height - padding.bottom} Z`;
+
+          const isPositive = variation.pourcentage >= 0;
+          const lineColor = isPositive ? '#10B981' : '#EF4444';
+          const areaColor = isPositive ? '#D1FAE5' : '#FEE2E2';
+
           return (
             <View style={styles.marketTrendsSection}>
-              <Text style={styles.sectionTitle}>Évolution du prix au m² - {formData.commune}</Text>
-              <View style={styles.marketTrendsTable}>
+              <Text style={styles.sectionTitle}>Tendance du marché</Text>
+              <View style={styles.marketTrendsBox}>
                 <View style={styles.marketTrendsHeader}>
-                  {historique.map((item) => (
-                    <Text key={item.annee} style={styles.marketTrendsHeaderCell}>{item.annee}</Text>
-                  ))}
+                  <Text style={styles.marketTrendsTitle}>Évolution du prix au m²</Text>
+                  <Text style={styles.marketTrendsCommune}>{formData.commune}</Text>
                 </View>
-                <View style={styles.marketTrendsRow}>
-                  {historique.map((item) => (
-                    <Text key={item.annee} style={styles.marketTrendsCell}>{formatPriceXPF(item.prix)}</Text>
-                  ))}
+                <View style={styles.marketTrendsContent}>
+                  <View style={styles.marketTrendsChart}>
+                    <Svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', height: 50 }}>
+                      {/* Zone sous la courbe */}
+                      <Path d={areaPath} fill={areaColor} />
+                      {/* Ligne principale */}
+                      <Path
+                        d={linePath}
+                        fill="none"
+                        stroke={lineColor}
+                        strokeWidth={1.5}
+                      />
+                    </Svg>
+                    <View style={styles.marketTrendsYears}>
+                      <Text style={styles.marketTrendsYear}>{historique[0]?.annee}</Text>
+                      <Text style={styles.marketTrendsYear}>{historique[historique.length - 1]?.annee}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.marketTrendsStats}>
+                    <View style={styles.marketTrendsVariation}>
+                      <Text style={isPositive ? styles.variationText : styles.variationTextNegative}>
+                        {isPositive ? '+' : ''}{variation.pourcentage}%
+                      </Text>
+                    </View>
+                    <Text style={styles.marketTrendsSince}>depuis 2020</Text>
+                    <Text style={styles.marketTrendsCurrentPrice}>
+                      {formatPriceXPF(historique[historique.length - 1]?.prix || 0)}/m²
+                    </Text>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.marketTrendsVariation}>
-                <Text style={styles.variationText}>
-                  Évolution 2020-2025 : +{variation.pourcentage}%
-                </Text>
               </View>
             </View>
           );
         })()}
 
-        {/* Biens similaires */}
+        {/* Biens similaires avec images */}
         {visibility.similarOffers && result.comparables && result.comparables.length > 0 && (
           <View style={styles.similarOffersSection}>
             <Text style={styles.sectionTitle}>Biens similaires sur le marché</Text>
             <View style={styles.similarOffersGrid}>
-              {result.comparables.slice(0, 4).map((offer, index) => (
-                <View key={index} style={styles.similarOfferCard}>
-                  <Text style={styles.similarOfferType}>{offer.type_bien}</Text>
-                  <Text style={styles.similarOfferPrice}>
-                    {offer.prix_formatte || `${(offer.prix / 1000000).toFixed(1)} MF`}
-                  </Text>
-                  <View style={styles.similarOfferDetails}>
-                    <Text style={styles.similarOfferDetail}>{offer.surface} m²</Text>
-                    <Text style={styles.similarOfferDetail}>{offer.commune}</Text>
+              {result.comparables.slice(0, 4).map((offer, index) => {
+                const photoUrl = cleanPhotoUrl(offer.photo_url);
+                return (
+                  <View key={index} style={styles.similarOfferCard}>
+                    {/* Image du bien */}
+                    {photoUrl ? (
+                      <View style={styles.similarOfferImageContainer}>
+                        <Image style={styles.similarOfferImage} src={photoUrl} />
+                      </View>
+                    ) : (
+                      <View style={styles.similarOfferNoImage}>
+                        <Text style={styles.similarOfferNoImageText}>Photo non disponible</Text>
+                      </View>
+                    )}
+                    {/* Contenu */}
+                    <View style={styles.similarOfferContent}>
+                      <Text style={styles.similarOfferType}>{offer.type_bien}</Text>
+                      <Text style={styles.similarOfferPrice}>
+                        {offer.prix_formatte || `${(offer.prix / 1000000).toFixed(1)} MF`}
+                      </Text>
+                      <View style={styles.similarOfferDetails}>
+                        <Text style={styles.similarOfferDetail}>{offer.surface} m²</Text>
+                        <Text style={styles.similarOfferDetail}>{offer.commune}</Text>
+                      </View>
+                    </View>
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </View>
           </View>
         )}
