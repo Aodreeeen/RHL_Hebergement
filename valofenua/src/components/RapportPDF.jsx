@@ -699,14 +699,6 @@ export default function RapportPDF({ result, formData, adjustedPrice, agentProfi
           </View>
         )}
 
-        {/* Avertissement - toujours affiché */}
-        <View style={styles.disclaimer}>
-          <Text style={styles.disclaimerText}>
-            Cette estimation est basée sur les données du marché immobilier polynésien.
-            Elle est fournie à titre indicatif et ne constitue pas une évaluation officielle.
-          </Text>
-        </View>
-
         {/* Date */}
         <Text style={styles.date}>Rapport réalisé le {formatDate()}</Text>
 
@@ -736,6 +728,14 @@ export default function RapportPDF({ result, formData, adjustedPrice, agentProfi
               </View>
             </View>
           )}
+        </View>
+
+        {/* Avertissement légal - toujours affiché en dernier */}
+        <View style={styles.disclaimer}>
+          <Text style={styles.disclaimerText}>
+            Cette estimation est basée sur les données du marché immobilier polynésien.
+            Elle est fournie à titre indicatif et ne constitue pas une évaluation officielle.
+          </Text>
         </View>
       </Page>
     </Document>
