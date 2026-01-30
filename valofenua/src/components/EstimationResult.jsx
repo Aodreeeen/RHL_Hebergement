@@ -43,6 +43,9 @@ export default function EstimationResult({ result, formData, onReset, estimation
     similarOffers: true,
   });
 
+  // État pour masquer des biens similaires individuellement (indices des biens masqués)
+  const [hiddenComparables, setHiddenComparables] = useState([]);
+
   const surfacePrincipale = formData.categorie === 'Terrain' ? formData.surface_terrain : formData.surface;
 
   const ecartPrix = prix_haut - prix_bas;
@@ -59,6 +62,14 @@ export default function EstimationResult({ result, formData, onReset, estimation
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
+  }, []);
+
+  const toggleComparable = useCallback((index) => {
+    setHiddenComparables(prev =>
+      prev.includes(index)
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
   }, []);
 
   const getBienLabel = () => {
@@ -93,7 +104,8 @@ export default function EstimationResult({ result, formData, onReset, estimation
         adjustedPrice: hasAdjusted ? adjustedPrice : null,
         bienPhoto,
         estimationId,
-        sectionVisibility
+        sectionVisibility,
+        hiddenComparables
       }
     });
   };
@@ -223,7 +235,11 @@ export default function EstimationResult({ result, formData, onReset, estimation
         visible={sectionVisibility.similarOffers}
         onToggle={toggleSection}
       >
-        <SimilarOffers comparables={result.comparables} />
+        <SimilarOffers
+          comparables={result.comparables}
+          hiddenComparables={hiddenComparables}
+          onToggleComparable={toggleComparable}
+        />
       </ToggleableSection>
 
       {/* Note - toujours affichée (non toggleable) */}

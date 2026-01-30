@@ -1,7 +1,7 @@
-import { Home, MapPin, Ruler, Banknote } from 'lucide-react';
+import { Home, MapPin, Ruler, Banknote, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
-export default function SimilarOffers({ comparables }) {
+export default function SimilarOffers({ comparables, hiddenComparables = [], onToggleComparable }) {
   // Ne rien afficher si pas de comparables
   if (!comparables || !Array.isArray(comparables) || comparables.length === 0) {
     return null;
@@ -24,12 +24,30 @@ export default function SimilarOffers({ comparables }) {
   const OfferCard = ({ offer, index }) => {
     const [imageError, setImageError] = useState(false);
     const cleanedPhotoUrl = cleanPhotoUrl(offer.photo_url);
+    const isHidden = hiddenComparables.includes(index);
 
     return (
       <div
         key={index}
-        className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-[#0077B6]/40 group"
+        className={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-[#0077B6]/40 group ${isHidden ? 'opacity-40' : ''}`}
       >
+        {/* Bouton toggle pour masquer/afficher dans le PDF */}
+        {onToggleComparable && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleComparable(index);
+            }}
+            className={`absolute top-3 right-3 z-20 p-1.5 rounded-full shadow-md border transition-all ${
+              !isHidden
+                ? 'bg-white/90 backdrop-blur-sm border-slate-200 text-slate-500 hover:text-[#0077B6] hover:border-[#0077B6]'
+                : 'bg-slate-200/90 backdrop-blur-sm border-slate-300 text-slate-400 hover:bg-slate-300'
+            }`}
+            title={!isHidden ? 'Masquer du PDF' : 'Afficher dans le PDF'}
+          >
+            {!isHidden ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          </button>
+        )}
         {/* Image du bien */}
         <div className="h-64 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
           {cleanedPhotoUrl && !imageError ? (
