@@ -116,7 +116,7 @@ export default function EstimationResult({ result, formData, onReset, estimation
             <img
               src={bienPhoto}
               alt="Photo du bien"
-              className="w-20 h-20 object-cover rounded-lg border-2 border-white/30 flex-shrink-0"
+              className="w-28 h-28 object-cover rounded-lg border-2 border-white/30 flex-shrink-0"
             />
           )}
           <div className="flex-1 min-w-0">
