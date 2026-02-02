@@ -104,7 +104,7 @@ export default function EstimationForm({ initialState }) {
     }
   };
 
-  // Gestion des photos supplémentaires
+  // Gestion des photos supplémentaires (structure: { data: string, description: string })
   const handleExtraPhotosChange = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -124,7 +124,7 @@ export default function EstimationForm({ initialState }) {
 
       const reader = new FileReader();
       reader.onload = (event) => {
-        setPhotosSupplementaires((prev) => [...prev, event.target?.result]);
+        setPhotosSupplementaires((prev) => [...prev, { data: event.target?.result, description: '' }]);
       };
       reader.readAsDataURL(file);
     });
@@ -137,6 +137,12 @@ export default function EstimationForm({ initialState }) {
 
   const handleRemoveExtraPhoto = (index) => {
     setPhotosSupplementaires((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleExtraPhotoDescriptionChange = (index, description) => {
+    setPhotosSupplementaires((prev) =>
+      prev.map((photo, i) => (i === index ? { ...photo, description } : photo))
+    );
   };
 
   const handleChange = (e) => {
@@ -232,15 +238,15 @@ export default function EstimationForm({ initialState }) {
 
           // Upload des photos supplémentaires si présentes
           if (photosSupplementaires.length > 0) {
-            const { urls: extraUrls } = await uploadPhotosSupplementaires(
+            const { photos: uploadedPhotos } = await uploadPhotosSupplementaires(
               user.id,
               savedEstimation.id,
               photosSupplementaires
             );
-            if (extraUrls.length > 0) {
-              updates.photos_supplementaires = extraUrls;
-              // Mettre à jour l'état local avec les URLs
-              setPhotosSupplementaires(extraUrls);
+            if (uploadedPhotos.length > 0) {
+              updates.photos_supplementaires = uploadedPhotos;
+              // Mettre à jour l'état local avec les photos uploadées
+              setPhotosSupplementaires(uploadedPhotos);
             }
           }
 
@@ -558,37 +564,54 @@ export default function EstimationForm({ initialState }) {
                 Ajoutez des photos pour enrichir votre rapport PDF
               </p>
 
-              <div className="flex flex-wrap gap-3">
-                {/* Photos existantes */}
-                {photosSupplementaires.map((photo, index) => (
-                  <div key={index} className="relative w-20 h-20 flex-shrink-0">
-                    <img
-                      src={photo}
-                      alt={`Photo ${index + 1}`}
-                      className="w-full h-full object-cover rounded-lg border border-slate-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveExtraPhoto(index)}
-                      className="absolute -top-1.5 -right-1.5 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-md"
-                      title="Supprimer"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
+              {/* Grille des photos avec descriptions */}
+              {photosSupplementaires.length > 0 && (
+                <div className="space-y-3 mb-4">
+                  {photosSupplementaires.map((photo, index) => (
+                    <div key={index} className="flex gap-3 items-start bg-slate-50 rounded-lg p-2">
+                      <div className="relative w-20 h-20 flex-shrink-0">
+                        <img
+                          src={photo.data || photo.url || photo}
+                          alt={`Photo ${index + 1}`}
+                          className="w-full h-full object-cover rounded-lg border border-slate-200"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveExtraPhoto(index)}
+                          className="absolute -top-1.5 -right-1.5 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-md"
+                          title="Supprimer"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-xs text-slate-500 mb-1">
+                          Description (optionnel)
+                        </label>
+                        <input
+                          type="text"
+                          value={photo.description || ''}
+                          onChange={(e) => handleExtraPhotoDescriptionChange(index, e.target.value)}
+                          placeholder="Ex: Salon avec vue mer"
+                          className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0077B6]/20 focus:border-[#0077B6] transition-colors"
+                          maxLength={100}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-                {/* Bouton ajouter */}
-                {photosSupplementaires.length < MAX_EXTRA_PHOTOS && (
-                  <div
-                    onClick={() => extraPhotosInputRef.current?.click()}
-                    className="w-20 h-20 flex-shrink-0 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#0077B6] hover:bg-[#E0F4FF]/30 transition-colors"
-                  >
-                    <ImagePlus className="w-5 h-5 text-slate-400" />
-                    <p className="text-xs text-slate-500 mt-1">+</p>
-                  </div>
-                )}
-              </div>
+              {/* Bouton ajouter */}
+              {photosSupplementaires.length < MAX_EXTRA_PHOTOS && (
+                <div
+                  onClick={() => extraPhotosInputRef.current?.click()}
+                  className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:border-[#0077B6] hover:bg-[#E0F4FF]/30 transition-colors"
+                >
+                  <ImagePlus className="w-6 h-6 text-slate-400" />
+                  <p className="text-sm text-slate-500 mt-2">Ajouter une photo</p>
+                </div>
+              )}
 
               <input
                 ref={extraPhotosInputRef}

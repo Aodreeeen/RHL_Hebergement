@@ -53,23 +53,27 @@ export async function uploadBienPhoto(userId, estimationId, photoBase64) {
 
 /**
  * Upload plusieurs photos supplémentaires vers Supabase Storage
+ * Structure entrée: [{ data: base64/url, description: string }]
+ * Structure sortie: [{ url: string, description: string }]
  */
-export async function uploadPhotosSupplementaires(userId, estimationId, photosBase64) {
-  if (!photosBase64 || photosBase64.length === 0) return { urls: [], error: null };
+export async function uploadPhotosSupplementaires(userId, estimationId, photos) {
+  if (!photos || photos.length === 0) return { photos: [], error: null };
 
-  const uploadedUrls = [];
+  const uploadedPhotos = [];
 
   try {
-    for (let i = 0; i < photosBase64.length; i++) {
-      const photoBase64 = photosBase64[i];
+    for (let i = 0; i < photos.length; i++) {
+      const photo = photos[i];
+      const photoData = photo.data || photo.url || photo;
+      const description = photo.description || '';
 
       // Si c'est déjà une URL (pas base64), on la garde telle quelle
-      if (photoBase64.startsWith('http')) {
-        uploadedUrls.push(photoBase64);
+      if (typeof photoData === 'string' && photoData.startsWith('http')) {
+        uploadedPhotos.push({ url: photoData, description });
         continue;
       }
 
-      const matches = photoBase64.match(/^data:image\/(\w+);base64,(.+)$/);
+      const matches = photoData.match(/^data:image\/(\w+);base64,(.+)$/);
       if (!matches) {
         console.error('Format image invalide pour photo supplémentaire', i);
         continue;
@@ -106,13 +110,13 @@ export async function uploadPhotosSupplementaires(userId, estimationId, photosBa
         .from('estimation-photos')
         .getPublicUrl(fileName);
 
-      uploadedUrls.push(urlData.publicUrl);
+      uploadedPhotos.push({ url: urlData.publicUrl, description });
     }
 
-    return { urls: uploadedUrls, error: null };
+    return { photos: uploadedPhotos, error: null };
   } catch (err) {
     console.error('Erreur upload photos supplémentaires:', err);
-    return { urls: uploadedUrls, error: err };
+    return { photos: uploadedPhotos, error: err };
   }
 }
 
