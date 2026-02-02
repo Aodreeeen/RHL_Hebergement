@@ -473,10 +473,12 @@ const styles = StyleSheet.create({
   photosGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 10,
+  },
+  photoItem: {
+    width: '31%',
   },
   photoContainer: {
-    width: '31%',
     height: 80,
     borderRadius: 6,
     overflow: 'hidden',
@@ -486,6 +488,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     objectFit: 'cover',
+  },
+  photoDescription: {
+    fontSize: 7,
+    color: '#64748B',
+    marginTop: 3,
+    textAlign: 'center',
   },
 });
 
@@ -715,11 +723,20 @@ export default function RapportPDF({ result, formData, adjustedPrice, agentProfi
           <View style={styles.photosSection}>
             <Text style={styles.sectionTitle}>Photos du bien</Text>
             <View style={styles.photosGrid}>
-              {photosSupplementaires.map((photo, index) => (
-                <View key={index} style={styles.photoContainer}>
-                  <Image style={styles.photoImage} src={photo} />
-                </View>
-              ))}
+              {photosSupplementaires.map((photo, index) => {
+                const photoUrl = photo.url || photo;
+                const description = photo.description || '';
+                return (
+                  <View key={index} style={styles.photoItem}>
+                    <View style={styles.photoContainer}>
+                      <Image style={styles.photoImage} src={photoUrl} />
+                    </View>
+                    {description && (
+                      <Text style={styles.photoDescription}>{description}</Text>
+                    )}
+                  </View>
+                );
+              })}
             </View>
           </View>
         )}
