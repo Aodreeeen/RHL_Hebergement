@@ -240,6 +240,21 @@ export default function EstimationResult({ result, formData, onReset, estimation
         </div>
       </ToggleableSection>
 
+      {/* Texte personnalisé après Analyse du marché */}
+      <div className="bg-white rounded-xl shadow-sm p-4 border border-dashed border-slate-300">
+        <label className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+          <MessageSquare className="w-4 h-4" />
+          Ajouter un texte sous cette section <span className="text-slate-400">(optionnel)</span>
+        </label>
+        <textarea
+          value={texteAnalyseMarche}
+          onChange={(e) => setTexteAnalyseMarche(e.target.value)}
+          placeholder="Commentaire sur le marché local, tendances observées, positionnement du bien..."
+          rows={2}
+          className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0077B6]/20 focus:border-[#0077B6] transition-colors resize-none text-sm"
+        />
+      </div>
+
       {/* Caractéristiques du bien - TOGGLEABLE (seulement si des données existent) */}
       {(formData.etat_bien || (formData.caracteristiques && formData.caracteristiques.length > 0)) && (
         <ToggleableSection
@@ -299,6 +314,21 @@ export default function EstimationResult({ result, formData, onReset, estimation
         />
       </ToggleableSection>
 
+      {/* Texte personnalisé après Étude comparative */}
+      <div className="bg-white rounded-xl shadow-sm p-4 border border-dashed border-slate-300">
+        <label className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+          <MessageSquare className="w-4 h-4" />
+          Ajouter un texte sous cette section <span className="text-slate-400">(optionnel)</span>
+        </label>
+        <textarea
+          value={texteEtudeComparative}
+          onChange={(e) => setTexteEtudeComparative(e.target.value)}
+          placeholder="Analyse des biens comparables, différences notables, justification du positionnement prix..."
+          rows={2}
+          className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0077B6]/20 focus:border-[#0077B6] transition-colors resize-none text-sm"
+        />
+      </div>
+
       {/* Note - toujours affichée (non toggleable) */}
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
         <p className="text-sm text-amber-800">
@@ -306,59 +336,20 @@ export default function EstimationResult({ result, formData, onReset, estimation
         </p>
       </div>
 
-      {/* Personnalisation du dossier PDF */}
+      {/* Nom du client pour le PDF */}
       <div className="bg-white rounded-xl shadow-lg p-5 border border-slate-100">
-        <div className="flex items-center gap-2 mb-4">
-          <FileText className="w-5 h-5 text-[#0077B6]" />
-          <span className="text-base font-semibold text-slate-800">Personnalisation du dossier PDF</span>
+        <div className="flex items-center gap-2 mb-3">
+          <User className="w-5 h-5 text-[#0077B6]" />
+          <span className="text-base font-semibold text-slate-800">Destinataire du dossier</span>
         </div>
-
-        <div className="space-y-4">
-          {/* Nom du client */}
-          <div>
-            <label className="flex items-center gap-2 text-sm text-slate-600 mb-2">
-              <User className="w-4 h-4" />
-              Nom du client <span className="text-slate-400">(optionnel)</span>
-            </label>
-            <input
-              type="text"
-              value={nomClient}
-              onChange={(e) => setNomClient(e.target.value)}
-              placeholder="Ex: M. et Mme Dupont"
-              className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0077B6]/20 focus:border-[#0077B6] transition-colors"
-            />
-          </div>
-
-          {/* Texte après Analyse du marché (page 3) */}
-          <div>
-            <label className="flex items-center gap-2 text-sm text-slate-600 mb-2">
-              <MessageSquare className="w-4 h-4" />
-              Texte sous "Analyse du marché local" <span className="text-slate-400">(optionnel)</span>
-            </label>
-            <textarea
-              value={texteAnalyseMarche}
-              onChange={(e) => setTexteAnalyseMarche(e.target.value)}
-              placeholder="Commentaire sur le marché local, tendances observées, positionnement du bien..."
-              rows={3}
-              className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0077B6]/20 focus:border-[#0077B6] transition-colors resize-none"
-            />
-          </div>
-
-          {/* Texte après Étude comparative (page 4) */}
-          <div>
-            <label className="flex items-center gap-2 text-sm text-slate-600 mb-2">
-              <MessageSquare className="w-4 h-4" />
-              Texte sous "Étude comparative" <span className="text-slate-400">(optionnel)</span>
-            </label>
-            <textarea
-              value={texteEtudeComparative}
-              onChange={(e) => setTexteEtudeComparative(e.target.value)}
-              placeholder="Analyse des biens comparables, différences notables, justification du positionnement prix..."
-              rows={3}
-              className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0077B6]/20 focus:border-[#0077B6] transition-colors resize-none"
-            />
-          </div>
-        </div>
+        <input
+          type="text"
+          value={nomClient}
+          onChange={(e) => setNomClient(e.target.value)}
+          placeholder="Ex: M. et Mme Dupont"
+          className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0077B6]/20 focus:border-[#0077B6] transition-colors"
+        />
+        <p className="text-xs text-slate-400 mt-2">Ce nom apparaîtra sur la page de couverture du PDF</p>
       </div>
 
       {/* Bouton PDF */}
